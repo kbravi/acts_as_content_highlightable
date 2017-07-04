@@ -1,5 +1,5 @@
 require 'nokogiri'
-class HtmlNodeParser
+class ActsAsContentHighlightable::HtmlNodeParser
   def initialize(content)
     @content = content
     @parsed = Nokogiri::HTML.parse(@content)
@@ -36,9 +36,9 @@ class HtmlNodeParser
     max_iter = 100
     iter = 0
     while(existing_array.include? unique_id and iter < max_iter)
-      unique_id = SecureRandom.hex(4)
+      unique_id = (iter > max_iter/2) ? SecureRandom.hex(5) : SecureRandom.hex(4)
       iter += 1
-    end
+      end
     return unique_id
   end
 end

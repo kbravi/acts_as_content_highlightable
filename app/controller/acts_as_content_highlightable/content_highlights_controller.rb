@@ -16,7 +16,7 @@ module ActsAsContentHighlightable
         :selection_backward => params[:backward]
       })
       content_highlight.save
-      show_highlights = ContentHighlight.highlights_to_show(@highlightable, @highlighter_user).enrich_highlights(@highlighter_user)
+      show_highlights = ContentHighlight.highlights_to_show(@highlightable, @highlighter_user, {request: request}).enrich_highlights(@highlighter_user)
       render :json => show_highlights.as_json
     end
 

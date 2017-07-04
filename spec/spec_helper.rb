@@ -1,4 +1,5 @@
 require "bundler/setup"
+require "rails"
 require "acts_as_content_highlightable"
 
 RSpec.configure do |config|

@@ -6,6 +6,10 @@ require "acts_as_content_highlightable/model"
 require "acts_as_content_highlightable/engine"
 
 module ActsAsContentHighlightable
+
+  mattr_accessor :unique_html_node_identifier_key
+  self.unique_html_node_identifier_key = "chnode"
+
   ActiveSupport.on_load(:active_record) do
     extend ActsAsContentHighlightable::Model
   end

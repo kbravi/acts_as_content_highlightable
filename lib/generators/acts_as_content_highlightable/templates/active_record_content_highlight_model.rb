@@ -8,7 +8,8 @@ class ContentHighlight < ActiveRecord::Base
 
   validates_uniqueness_of :container_node_identifier, :scope => [:container_node_type, :startnode_offset, :endnode_offset, :highlightable, :user_id]
 
-  def self.highlights_to_show(highlightable, user)
+  def self.highlights_to_show(highlightable, user, options={})
+    # request = options[:request]
     highlightable.content_highlights
   end
 
