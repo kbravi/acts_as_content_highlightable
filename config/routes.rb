@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 end
 
 ActsAsContentHighlightable::Engine.routes.draw do
-  post 'content_highlights/add'
-  post 'content_highlights/remove'
+  scope module: "acts_as_content_highlightable" do
+    post 'content_highlights/add'
+    post 'content_highlights/remove'
+  end
 end

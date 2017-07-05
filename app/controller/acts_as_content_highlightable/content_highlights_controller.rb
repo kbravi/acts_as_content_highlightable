@@ -1,22 +1,26 @@
 module ActsAsContentHighlightable
   class ContentHighlightsController < ApplicationController
     before_action :set_highlighter_user
-    before_action :get_and_require_highlightable, :only => [:add]
+    before_action :get_highlightable
 
     def add
-      content_highlight = @highlightable.content_highlights.new({
-        :user => @highlighter_user,
-        :highlightable_column => @highlightable.highlightable_column,
-        :content => params[:content],
-        :container_node_identifier_key => params[:common_ancestor_identifier_key],
-        :container_node_identifier => params[:common_ancestor_identifier],
-        :container_node_type => params[:common_ancestor_node_type],
-        :startnode_offset => params[:start_offset],
-        :endnode_offset => params[:end_offset],
-        :selection_backward => params[:backward]
-      })
-      content_highlight.save
-      show_highlights = ContentHighlight.highlights_to_show(@highlightable, @highlighter_user, {request: request}).enrich_highlights(@highlighter_user)
+      if @highlightable.present?
+        content_highlight = @highlightable.content_highlights.new({
+          :user => @highlighter_user,
+          :highlightable_column => @highlightable.highlightable_column,
+          :content => params[:content],
+          :container_node_identifier_key => params[:common_ancestor_identifier_key],
+          :container_node_identifier => params[:common_ancestor_identifier],
+          :container_node_type => params[:common_ancestor_node_type],
+          :startnode_offset => params[:start_offset],
+          :endnode_offset => params[:end_offset],
+          :selection_backward => params[:backward]
+        })
+        content_highlight.save
+        show_highlights = ContentHighlight.highlights_to_show(@highlightable, @highlighter_user, {request: request}).enrich_highlights(@highlighter_user)
+      else
+        show_highlights = Array.new
+      end
       render :json => show_highlights.as_json
     end
 
@@ -32,10 +36,10 @@ module ActsAsContentHighlightable
     end
 
     private
-    def get_and_require_highlightable
+    def get_highlightable
       highlightable_model = params[:highlightable_type].to_s.constantize
-      @highlightable = highlightable_model.respond_to?(:find_by_id) && highlightable_model.respond_to?(:highlightable_column) && highlightable_model.find_by_id(params[:highlightable_id])
-      return false if @highlightable.blank?
+      @highlightable = highlightable_model.respond_to?(:find_by_id) && highlightable_model.find_by_id(params[:highlightable_id])
+      @highlightable = nil unless @highlightable.respond_to?(:highlightable_column)
     end
 
     def set_highlighter_user

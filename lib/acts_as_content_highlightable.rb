@@ -10,6 +10,9 @@ module ActsAsContentHighlightable
   mattr_accessor :unique_html_node_identifier_key
   self.unique_html_node_identifier_key = "chnode"
 
+  mattr_accessor :mount
+  self.mount = true
+
   ActiveSupport.on_load(:active_record) do
     extend ActsAsContentHighlightable::Model
   end
