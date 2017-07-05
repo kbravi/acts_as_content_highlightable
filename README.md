@@ -67,9 +67,35 @@ and this to your application.css file
 ```
 
 #### 5. Retroactively tag text nodes
-This gem creates a `before_save` callback to tag every html node in the content (e.g. `:summary`) with a data attribute `data-chnode="daed4c12"`. This is essential to save, persist and display highlights. To retroactively tag the nodes, use some variant of the following code
+This gem creates a `before_save` callback to tag every html node in the content (e.g. `:summary`) with a data attribute `data-chnode="<unique_random_hex>"`. This is essential to save, persist and display highlights. To retroactively tag the nodes, use some variant of the following code
 ```
 Post.all.each{|post| post.prepare_for_content_highlights && post.save}
+```
+Please note that the data in your content column will be altered by this gem - it adds data attributes to text nodes of the html content. If your content is plain text, it will be converted into html text. See examples below
+```
+<!--Example 1 (plain text) -->
+Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.
+
+<!--Example 2 (html text) -->
+<p>Far far away, behind the word mountains, far from the countries <em>Vokalia and Consonantia</em>, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+<p>A small river named Duden flows by their place and supplies <b>it with the necessary <i>regelialia</i>. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+
+<!--Example 3 (already tagged html text) -->
+<p data-chnode="aba2519">Far far away, behind the word mountains, far from the countries <em data-chnode="c13d177">Vokalia and Consonantia</em>, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+<p data-chnode="98dbae1">A small river named Duden flows by their place and supplies <b data-chnode="d1a2419">it with the necessary <i data-chnode="123ddb3">regelialia</i>. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+```
+becomes
+```
+<!--Example 1 (plain text - wrapped in <p> tag and added node identifier) -->
+<p data-chnode="d1a2419">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+
+<!--Example 2 (html text - added node identifiers) -->
+<p data-chnode="aba2519">Far far away, behind the word mountains, far from the countries <em data-chnode="c13d177">Vokalia and Consonantia</em>, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+<p data-chnode="98dbae1">A small river named Duden flows by their place and supplies <b data-chnode="d1a2419">it with the necessary <i data-chnode="123ddb3">regelialia</i>. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+
+<!--Example 3 (already tagged html text - node identifiers preserved)-->
+<p data-chnode="aba2519">Far far away, behind the word mountains, far from the countries <em data-chnode="c13d177">Vokalia and Consonantia</em>, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+<p data-chnode="98dbae1">A small river named Duden flows by their place and supplies <b data-chnode="d1a2419">it with the necessary <i data-chnode="123ddb3">regelialia</i>. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
 ```
 
 #### 6. Invoke the Content Highlighter in your view
