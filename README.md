@@ -59,7 +59,7 @@ end
 #### 4. Add javascript files and stylesheets to your application
 Add this to your application.js file
 ```
-// require content_highlight
+//= require content_highlight
 ```
 and this to your application.css file
 ```
