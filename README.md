@@ -1,8 +1,13 @@
 # ActsAsContentHighlightable
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/acts_as_content_highlightable`. To experiment with that code, run `bin/console` for an interactive prompt.
+Highlight Html Text content (inspired by Medium's highlight feature)
+* jQuery free
+* Associate highlights to the user
+* Show highlights based on what users can see
+* Read-only mode
 
-TODO: Delete this and the text above, and describe your gem
+# Sample
+![How it works](http://i.imgur.com/xHBCBht.gif)
 
 ## Installation
 
@@ -14,25 +19,109 @@ gem 'acts_as_content_highlightable'
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install acts_as_content_highlightable
+```
+$ gem install acts_as_content_highlightable
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+#### 1. Install
+This will copy the model and migration files for ContentHighlight model
+
+```
+rails generate acts_as_content_highlightable:install
+```
+
+#### 2. Migrate
+Migrate your database to create the content_highlights table
+
+```
+bundle exec rake db:migrate
+```
+
+#### 3. Set your model as content_highlightable
+Add `acts_as_content_highlightable_on` to the model and choose the column that has the HTML content that you want to highlight.
+
+```
+Class Post < ApplicationRecord
+  validates :summary, :presence => true
+  acts_as_content_highlightable_on :summary
+  # summary is a column on Post model that stores HTML text content
+end
+```
+
+#### 4. Add javascript files and stylesheets to your application
+Add this to your application.js file
+```
+// require content_highlight
+```
+and this to your application.css file
+```
+*= require content_highlight
+```
+
+#### 5. Retroactively tag text nodes
+This gem creates a `before_save` callback to tag every html node in the content (e.g. `:summary`) with a data attribute `data-chnode="daed4c12"`. This is essential to save, persist and display highlights. To retroactively tag the nodes, use some variant of the following code
+```
+Post.all.each{|post| post.prepare_for_content_highlights && post.save}
+```
+
+#### 6. Invoke the Content Highlighter in your view
+Here is a sample posts/show view
+```
+<div id="post_summary">
+  <%= @post.summary.html_safe%>
+</div>
+
+<script type="text/javascript">
+  setTimeout(function(){
+    var worker = new contentHighlightWorker(document.getElementById('post_summary'), {
+      nodeIdentifierKey: "<%=ActsAsContentHighlightable.unique_html_node_identifier_key%>",
+      highlightableType: "Post",
+      highlightableId: "1",
+      readOnly: false
+    });
+    worker.init();
+  }, 10);
+</script>
+
+```
+
+## Advanced
+Here are some of many customizations that are possible:
+#### 1. Show selective highlights
+Use the `ContentHighlight#highlights_to_show` method to selectively show certain highlights based on current_user, cookies, request, etc.
+
+#### 2. Enrich Highlights
+`ContentHighlight#enrich_highlights` lets us modify the `description`, set permissions to remove `can_cancel`, and change css classes to distinguish the user's vs others' highlights `lifetime_class_ends`
+
+#### 3. Custom Styling
+Check out [content_highlight.css](./vendor/assets/stylesheets/content_highlight.css)
+
+#### 4. More Javascript options
+`highlightableType` and `highlightableId` are required. Highlights can be set `readOnly` - no addition or removal. You may never need more but check out the [content_highlight.js](./vendor/assets/javascripts/content_highlight.js) file for more configuration options.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Dependency
+
+* [Nokogiri](https://github.com/sparklemotion/nokogiri) for HTML parsing
+* Text selection is supported by [Rangy](https://www.github.com/timdown/rangy)
+* [Rangy's Core module](https://github.com/timdown/rangy/blob/master/src/core/core.js)
+* [Rangy's Class Applier Module](https://github.com/timdown/rangy/blob/master/src/modules/rangy-classapplier.js)
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/acts_as_content_highlightable. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/kbravi/acts_as_content_highlightable. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License

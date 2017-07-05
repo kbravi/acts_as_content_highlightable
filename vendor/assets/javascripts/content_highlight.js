@@ -32,6 +32,7 @@ var contentHighlightWorker = function(element, options){
   this.settings = {
     highlightableType: options.highlightableType || "",
     highlightableId: options.highlightableId || "",
+    readOnly: options.readOnly || false,
     nodeIdentifierKey: options.nodeIdentifierKey || "chnode",
     highlightClass: options.highlightClass || "content-highlight",
     highlightIdentifyClassRoot: options.highlightIdentifyClassRoot || "content-highlight-identifier-",
@@ -41,7 +42,6 @@ var contentHighlightWorker = function(element, options){
     popTipDefaultHead: options.popTipDefaultHead || "Highlight",
     addToServerPath: options.addToServerPath || element.dataset.addhighlightspath || "/content_highlights/add?",
     removeFromServerPath: options.removeFromServerPath || element.dataset.removehighlightspath || "/content_highlights/remove?",
-    readOnly: options.readOnly || false,
   }
 
   this.sendToServerParams = "highlightable_type=" + this.settings.highlightableType + "&highlightable_id=" + this.settings.highlightableId;

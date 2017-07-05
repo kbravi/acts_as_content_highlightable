@@ -10,11 +10,11 @@ module ActsAsContentHighlightable
       end
 
       class_eval %{
-        before_save :name_html_nodes, :if => :#{column_name.to_s}_changed?
+        before_save :prepare_for_content_highlights, :if => :#{column_name.to_s}_changed?
         def highlightable_column
           return "#{column_name.to_s}"
         end
-        def name_html_nodes
+        def prepare_for_content_highlights
           self.#{column_name.to_s} = ActsAsContentHighlightable::HtmlNodeParser.new(self.#{column_name.to_s}).assign_unique_node_identifiers("data-" + ActsAsContentHighlightable.unique_html_node_identifier_key).body_content
         end
       }
