@@ -13,6 +13,11 @@ module ActsAsContentHighlightable
   mattr_accessor :mount
   self.mount = true
 
+  def self.extract_text_from_html(text)
+    return nil unless text.is_a? String
+    return ActsAsContentHighlightable::HtmlNodeParser.new(text).body_text
+  end
+
   ActiveSupport.on_load(:active_record) do
     extend ActsAsContentHighlightable::Model
   end

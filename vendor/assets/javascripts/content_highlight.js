@@ -40,6 +40,7 @@ var contentHighlightWorker = function(element, options){
   this.settings = {
     highlightableType: options.highlightableType || "",
     highlightableId: options.highlightableId || "",
+    highlightableColumn: options.highlightableColumn || "",
     readOnly: options.readOnly || false,
     nodeIdentifierKey: options.nodeIdentifierKey || "chnode",
     highlightClass: options.highlightClass || "content-highlight",
@@ -52,7 +53,7 @@ var contentHighlightWorker = function(element, options){
     removeFromServerPath: options.removeFromServerPath || element.dataset.removehighlightspath || "/content_highlights/remove?",
   }
 
-  this.sendToServerParams = "highlightable_type=" + this.settings.highlightableType + "&highlightable_id=" + this.settings.highlightableId;
+  this.sendToServerParams = "highlightable_type=" + this.settings.highlightableType + "&highlightable_id=" + this.settings.highlightableId + "&highlightable_column=" + this.settings.highlightableColumn;
 
   if(!rangy || !rangy.getSelection){
     return;

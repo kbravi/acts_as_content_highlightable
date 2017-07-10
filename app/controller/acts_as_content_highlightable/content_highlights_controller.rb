@@ -2,12 +2,13 @@ module ActsAsContentHighlightable
   class ContentHighlightsController < ApplicationController
     before_action :set_highlighter_user
     before_action :get_highlightable
+    before_action :set_highlightable_column, :only => [:add]
 
     def add
-      if @highlightable.present?
+      if @highlightable.present? and (ContentHighlight.respond_to?(:can_add_highlights?) ? ContentHighlight.can_add_highlights?(@highlightable, @highlighter_user) : true)
         content_highlight = @highlightable.content_highlights.new({
           :user => @highlighter_user,
-          :highlightable_column => @highlightable.highlightable_column,
+          :highlightable_column => @highlightable_column,
           :content => params[:content],
           :container_node_identifier_key => params[:common_ancestor_identifier_key],
           :container_node_identifier => params[:common_ancestor_identifier],
@@ -26,7 +27,7 @@ module ActsAsContentHighlightable
 
     def remove
       content_highlight = @highlightable.content_highlights.where(:id => params[:content_highlight_id]).first
-      if content_highlight.present? and (content_highlight.user == @highlighter_user)
+      if content_highlight.present? and (content_highlight.respond_to?(:can_remove_highlight?) ? content_highlight.can_remove_highlight?(@highlighter_user) : (content_highlight.user == @highlighter_user))
         remove_highlights = @highlightable.content_highlights.where(:id => content_highlight.id).enrich_highlights(@highlighter_user).as_json
         content_highlight.destroy
       else
@@ -36,10 +37,27 @@ module ActsAsContentHighlightable
     end
 
     private
+
+    def set_highlightable_column
+      if params[:highlightable_column].blank? and @highlightable.highlightable_columns.size > 1
+        raise ArgumentError.new("More than one highlightable column found. Please provide highlightable_column in your parameters")
+      elsif params[:highlightable_column].blank?
+        @highlightable_column = @highlightable.highlightable_columns.first.to_s
+      else
+        @highlightable_column = params[:highlightable_column].to_s
+      end
+      if not @highlightable.respond_to?(:highlightable_columns)
+        raise ArgumentError.new("Highlightable column not found. Please check the parameter: highlightable_column")
+      end
+      if not @highlightable.highlightable_columns.include? @highlightable_column
+        raise ArgumentError.new("Invalid Highlightable column")
+      end
+    end
+
     def get_highlightable
       highlightable_model = params[:highlightable_type].to_s.constantize
       @highlightable = highlightable_model.respond_to?(:find_by_id) && highlightable_model.find_by_id(params[:highlightable_id])
-      @highlightable = nil unless @highlightable.respond_to?(:highlightable_column)
+      @highlightable = nil unless @highlightable.respond_to?(:highlightable_columns)
     end
 
     def set_highlighter_user

@@ -17,6 +17,10 @@ class ActsAsContentHighlightable::HtmlNodeParser
     return @parsed.css('body').inner_html
   end
 
+  def body_text
+    return @parsed.text
+  end
+
   private
 
   def apply_unique_identifiers_to_children(node, attribute_name)

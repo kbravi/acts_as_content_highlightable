@@ -1,21 +1,24 @@
 module ActsAsContentHighlightable
   module Model
-    def acts_as_content_highlightable_on(column_name)
-      if not self.column_names.include? column_name.to_s
-        raise ArgumentError, "acts_as_content_highlightable_on: Invalid attribute #{column_name}"
+    def acts_as_content_highlightable_on(column_names)
+      column_names = [column_names].flatten
+      if not column_names.all? {|column_name| self.column_names.include? column_name.to_s}
+        raise ArgumentError, "acts_as_content_highlightable_on: One or more invalid attribute #{column_names}"
       end
 
       class_eval do
         has_many :content_highlights, :as => :highlightable
+        before_save :prepare_for_content_highlights, :if => column_names.map{|column_name| "#{column_name}_changed?"}
       end
 
       class_eval %{
-        before_save :prepare_for_content_highlights, :if => :#{column_name.to_s}_changed?
-        def highlightable_column
-          return "#{column_name.to_s}"
+        def highlightable_columns
+          return #{column_names.map(&:to_s)}
         end
         def prepare_for_content_highlights
-          self.#{column_name.to_s} = ActsAsContentHighlightable::HtmlNodeParser.new(self.#{column_name.to_s}).assign_unique_node_identifiers("data-" + ActsAsContentHighlightable.unique_html_node_identifier_key).body_content
+          #{column_names}.each do |column_name|
+            self[column_name.to_sym] = ActsAsContentHighlightable::HtmlNodeParser.new(self[column_name.to_sym]).assign_unique_node_identifiers("data-" + ActsAsContentHighlightable.unique_html_node_identifier_key).body_content
+          end
         end
       }
     end

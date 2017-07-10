@@ -41,9 +41,9 @@ RSpec.describe ActsAsContentHighlightable do
       @post = Post.new(:summary => "Good morning! <em>hello there.<i>Great to meet you</i>How are you?</em>")
     end
 
-    it "responds to highlightable_column" do
-      expect(@post.respond_to? :highlightable_column).to eq(true)
-      expect(@post.highlightable_column).to eq("summary")
+    it "responds to highlightable_columns" do
+      expect(@post.respond_to? :highlightable_columns).to eq(true)
+      expect(@post.highlightable_columns).to eq(["summary"])
     end
 
     it "responds to content_highlights association" do

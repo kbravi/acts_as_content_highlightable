@@ -46,13 +46,13 @@ bundle exec rake db:migrate
 ```
 
 #### 3. Set your model as content_highlightable
-Add `acts_as_content_highlightable_on` to the model and choose the column that has the HTML content that you want to highlight.
+Add `acts_as_content_highlightable_on` to the model and choose the column (or columns) that has the HTML content that you want to highlight.
 
 ```
 Class Post < ApplicationRecord
-  validates :summary, :presence => true
-  acts_as_content_highlightable_on :summary
-  # summary is a column on Post model that stores HTML text content
+  validates :summary, :content, :presence => true
+  acts_as_content_highlightable_on [:summary, :content]
+  # summary and content are columns on Post model that stores HTML text content
 end
 ```
 
@@ -85,6 +85,7 @@ Here is a sample posts/show view
       nodeIdentifierKey: "<%=ActsAsContentHighlightable.unique_html_node_identifier_key%>",
       highlightableType: "Post",
       highlightableId: "1",
+      highlightableColumn: "summary", // required if your model has more than 1 highlightable column
       readOnly: false
     });
     worker.init();
@@ -101,10 +102,16 @@ Use the `ContentHighlight#highlights_to_show` method to selectively show certain
 #### 2. Enrich Highlights
 `ContentHighlight#enrich_highlights` lets us modify the `description`, set permissions to remove `can_cancel`, and change css classes to distinguish the user's vs others' highlights `lifetime_class_ends`
 
-#### 3. Custom Styling
+#### 3. Set Add/remove permissions
+`ContentHighlight#can_add_highlights?(highlightable, user)` and `content_highlight#can_remove_highlight?(user)` lets us set permissions to add/remove highlights based on the user, highlightable etc.
+
+#### 4. Custom Node identifier Key
+`ActsAsContentHighlightable.unique_html_node_identifier_key = 'somekey'` shall be initialized in the rails app, preferably in the `config/initializers/acts_as_content_highlightable.rb`. This will let us use a node identifier key. The default is `chnode`, and nodes will be tagged `data-chnode`. Note that changing this will render your earlier node tags useless, and you might have to re tag all the text nodes with the new key.
+
+#### 5. Custom Styling
 Check out [content_highlight.css](./vendor/assets/stylesheets/content_highlight.css)
 
-#### 4. More Javascript options
+#### 6. More Javascript options
 `highlightableType` and `highlightableId` are required. Highlights can be set `readOnly` - no addition or removal. You may never need more but check out the [content_highlight.js](./vendor/assets/javascripts/content_highlight.js) file for more configuration options.
 
 ## Development

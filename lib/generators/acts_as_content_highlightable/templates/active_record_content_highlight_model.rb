@@ -14,6 +14,17 @@ class ContentHighlight < ActiveRecord::Base
     highlightable.content_highlights
   end
 
+  # Set Add Permissions here
+  def self.can_add_highlights?(highlightable, user)
+    return true # e.g. highlightable.can_highlight?(user)
+  end
+
+  # Set remove permissions here
+  def can_remove_highlight?(user)
+    return (self.user == user)
+  end
+
+
   # This method is used to show details on the poptips with permissions to remove highlights
   def self.enrich_highlights(user)
     ContentHighlight.joins(:user)
