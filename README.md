@@ -6,6 +6,8 @@ Highlight Html Text content (inspired by Medium's highlight feature)
 * Show highlights based on what users can see
 * Read-only mode
 
+Not a ruby application? Take a look at [content_highlight](https://github.com/kbravi/content_highlight) for a basic idea.
+
 # Sample
 ![How it works](http://i.imgur.com/xHBCBht.gif)
 
