@@ -1,3 +1,8 @@
+# v 0.2.1
+(Oct 24, 2017)
+
+* Fixes bugs, and supports IE.
+
 # v 0.2.0
 (July, 10, 2017)
 
