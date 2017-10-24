@@ -283,7 +283,7 @@ var contentHighlightWorker = function(element, options){
     if(self.popTip != undefined){
       self.popTip.style.top = highlightElement.offsetTop + highlightElement.offsetHeight + "px";
       self.popTip.style.left = highlightElement.offsetLeft + 10 + "px";
-      self.element.append(self.popTip);
+      self.element.appendChild(self.popTip);
       self.markHighlightAsActive(highlightElement);
       window.addEventListener('resize', self.removePopTip);
       document.addEventListener('click', self.removePopTip);
@@ -292,7 +292,7 @@ var contentHighlightWorker = function(element, options){
 
   this.removePopTip = function(){
     if(self.popTip != undefined){
-      self.popTip.remove();
+      self.element.removeChild(self.popTip);
       self.popTip = undefined;
       self.unmarkActiveHighlights();
       window.removeEventListener('resize', self.removePopTip);
