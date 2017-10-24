@@ -292,7 +292,7 @@ var contentHighlightWorker = function(element, options){
 
   this.removePopTip = function(){
     if(self.popTip != undefined){
-      self.popTip.removeChild();
+      self.element.removeChild(self.popTip);
       self.popTip = undefined;
       self.unmarkActiveHighlights();
       window.removeEventListener('resize', self.removePopTip);
